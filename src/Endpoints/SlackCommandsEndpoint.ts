@@ -8,12 +8,12 @@ import { SlackLoadingMessage } from "../Slack/SlackLoadingMessage"
 export class SlackCommandsEndpoint implements Endpoint {
   chatGPTClient: ChatGPTClient
   slackClient: SlackClient
-  
+
   constructor(chatGPTClient: ChatGPTClient, slackClient: SlackClient) {
     this.chatGPTClient = chatGPTClient
     this.slackClient = slackClient
   }
-  
+
   async fetch(request: Request, ctx: ExecutionContext): Promise<Response> {
     if (request.method == "POST") {
       return await this.handlePostRequest(request, ctx)
@@ -21,8 +21,8 @@ export class SlackCommandsEndpoint implements Endpoint {
       return ResponseFactory.badRequest("Unsupported HTTP method: " + request.method)
     }
   }
-  
-  private async handlePostRequest(request: Request, ctx: ExecutionContext): Promise<Response> {    
+
+  private async handlePostRequest(request: Request, ctx: ExecutionContext): Promise<Response> {
     const body = await readRequestBody(request)
     let answerPromise = this.postAnswer(body.response_url, body.user_id, body.text)
     ctx.waitUntil(answerPromise)
@@ -30,9 +30,11 @@ export class SlackCommandsEndpoint implements Endpoint {
       text: SlackLoadingMessage.getRandom()
     })
   }
-    
+
   private async postAnswer(responseURL: string, userId: string, prompt: string) {
+    console.log('postanswer prompt', prompt)
     const answer = await this.chatGPTClient.getResponse(prompt)
+    console.log('answer', answer)
     await this.slackClient.postResponse(responseURL, {
       text: answer,
       response_type: "in_channel",

@@ -11,12 +11,12 @@ import { SlackView } from "../Slack/SlackView"
 export class SlackInteractivityEndpoint implements Endpoint {
   chatGPTClient: ChatGPTClient
   slackClient: SlackClient
-  
+
   constructor(chatGPTClient: ChatGPTClient, slackClient: SlackClient) {
     this.chatGPTClient = chatGPTClient
     this.slackClient = slackClient
   }
-  
+
   async fetch(request: Request, ctx: ExecutionContext): Promise<Response> {
     if (request.method == "POST") {
       return await this.handlePostRequest(request, ctx)
@@ -24,7 +24,7 @@ export class SlackInteractivityEndpoint implements Endpoint {
       return ResponseFactory.badRequest("Unsupported HTTP method: " + request.method)
     }
   }
-  
+
   private async handlePostRequest(request: Request, ctx: ExecutionContext): Promise<Response> {
     const body = await readRequestBody(request)
     const payload = JSON.parse(body.payload)
@@ -40,7 +40,7 @@ export class SlackInteractivityEndpoint implements Endpoint {
       return ResponseFactory.badRequest("Unsupported payload type: " + payload.type)
     }
   }
-  
+
   private async handleMessageAction(payload: any, ctx: ExecutionContext): Promise<Response> {
     if (payload.callback_id == SlackCallbackID.ASK_CHATGPT_ON_MESSAGE) {
       let answerPromise = this.postAnswer(payload.message.text, payload.channel.name, payload.message.ts)
@@ -50,7 +50,7 @@ export class SlackInteractivityEndpoint implements Endpoint {
       return ResponseFactory.badRequest("Unsupported callback ID: " + payload.callback_id)
     }
   }
-  
+
   private async handleShortcut(payload: any, ctx: ExecutionContext): Promise<Response> {
     if (payload.callback_id == SlackCallbackID.ASK_CHATGPT_GLOBAL) {
       await this.slackClient.openView(payload.trigger_id, SlackView.prompt())
@@ -59,7 +59,7 @@ export class SlackInteractivityEndpoint implements Endpoint {
       return ResponseFactory.badRequest("Unsupported callback ID: " + payload.callback_id)
     }
   }
-   
+
   private async handleBlockAction(payload: any, ctx: ExecutionContext): Promise<Response> {
     if (payload.actions.length == 0) {
       return ResponseFactory.badRequest("No action found")
@@ -77,7 +77,7 @@ export class SlackInteractivityEndpoint implements Endpoint {
       return ResponseFactory.badRequest("Unsupported callback ID: " + payload.callback_id)
     }
   }
-     
+
   private async handleViewSubmission(payload: any, ctx: ExecutionContext): Promise<Response> {
     const answer = payload.view.private_metadata
     if (answer == null || answer.length == 0) {
@@ -86,7 +86,7 @@ export class SlackInteractivityEndpoint implements Endpoint {
         errors: {
           prompt: "Please enter a prompt and wait for ChatGPT to answer."
         }
-      })  
+      })
     }
     const responseURL = payload.response_urls.length > 0 ? payload.response_urls[0].response_url : null
     if (answer == null || answer.length == 0) {
@@ -95,7 +95,7 @@ export class SlackInteractivityEndpoint implements Endpoint {
         errors: {
           prompt: "Please ensure you have selected a conversation."
         }
-      })  
+      })
     }
     await this.slackClient.postResponse(responseURL, {
       text: answer,
@@ -116,17 +116,17 @@ export class SlackInteractivityEndpoint implements Endpoint {
     })
     return new Response()
   }
-  
-  private async showAnswerInPromptView(viewId: string, prompt: string) {
+
+  private async showAnswerInPromptView(viewId: string, prompt: []) {
     const answer = await this.chatGPTClient.getResponse(prompt)
     await this.slackClient.updateView(viewId, SlackView.prompt({ answer: answer }))
   }
-  
-  private async postAnswer(prompt: string, channel: string, threadTs?: string) {
+
+  private async postAnswer(prompt: [], channel: string, threadTs?: string) {
     const answer = await this.chatGPTClient.getResponse(prompt)
     await this.slackClient.postMessage({
-      text: answer, 
-      channel: channel, 
+      text: answer,
+      channel: channel,
       thread_ts: threadTs
     })
   }

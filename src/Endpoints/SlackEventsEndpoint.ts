@@ -31,17 +31,16 @@ export class SlackEventsEndpoint implements Endpoint {
       // Make sure the message was not sent by a bot. If we do not have this check the bot will keep a conversation going with itself.
       const event = body.event
       if (!this.isEventFromBot(event)) {
-        if(event.thread_ts && event.thread_ts !== event.ts) {
-          // await this.postEphemeralLoadingMessage(event.type, event.user, event.channel, event.thread_ts)
+        if(event.type === 'app_mention' && event.thread_ts && event.thread_ts !== event.ts) {
           const history = await this.slackClient.getThreadHistory(event.channel, event.thread_ts)
-          console.log('history', history)
-          const answerPromise = this.postAnswer(event.type, event.channel, event.ts, event.text)
+          const answerPromise = this.postAnswer(event.type, event.channel, event.ts, history)
           ctx.waitUntil(answerPromise)
           return new Response()
         }
         if(event.type === 'app_mention') {
           await this.postEphemeralLoadingMessage(event.type, event.user, event.channel, event.thread_ts)
-          const answerPromise = this.postAnswer(event.type, event.channel, event.ts, event.text)
+          const prompt = [{"role": "user", "content": event.text}]
+          const answerPromise = this.postAnswer(event.type, event.channel, event.ts, prompt)
           ctx.waitUntil(answerPromise)
           return new Response()
         }
@@ -69,7 +68,7 @@ export class SlackEventsEndpoint implements Endpoint {
     await this.slackClient.postEphemeralMessage(message)
   }
 
-  private async postAnswer(eventType: any, channel: string, threadTs: string, prompt: string) {
+  private async postAnswer(eventType: any, channel: string, threadTs: string, prompt: {role: string, content: string}[]) {
     const answer = await this.chatGPTClient.getResponse(prompt)
     const message: any = {
       text: answer,

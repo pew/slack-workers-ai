@@ -120,15 +120,13 @@ export class SlackInteractivityEndpoint implements Endpoint {
     return new Response()
   }
 
-  private async showAnswerInPromptView(viewId: string, prompt: string) {
+  private async showAnswerInPromptView(viewId: string, prompt: []) {
     const answer = await this.chatGPTClient.getResponse(prompt)
     await this.slackClient.updateView(viewId, SlackView.prompt({ answer: answer }))
   }
 
-  private async postAnswer(prompt: string, channel: string, threadTs?: string) {
-    console.log('prompt:', prompt)
+  private async postAnswer(prompt: [], channel: string, threadTs?: string) {
     const answer = await this.chatGPTClient.getResponse(prompt)
-    console.log('answer:', answer)
     await this.slackClient.postMessage({
       text: answer,
       channel: channel,

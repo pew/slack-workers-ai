@@ -31,10 +31,8 @@ export class SlackCommandsEndpoint implements Endpoint {
     })
   }
 
-  private async postAnswer(responseURL: string, userId: string, prompt: string) {
-    console.log('postanswer prompt', prompt)
+  private async postAnswer(responseURL: string, userId: string, prompt: []) {
     const answer = await this.chatGPTClient.getResponse(prompt)
-    console.log('answer', answer)
     await this.slackClient.postResponse(responseURL, {
       text: answer,
       response_type: "in_channel",

@@ -42,8 +42,6 @@ export class SlackInteractivityEndpoint implements Endpoint {
   }
 
   private async handleMessageAction(payload: any, ctx: ExecutionContext): Promise<Response> {
-    console.log('payload', payload.message)
-    console.log('payload text', payload.message.text)
     if (payload.callback_id == SlackCallbackID.ASK_CHATGPT_ON_MESSAGE) {
       let answerPromise = this.postAnswer(payload.message.text, payload.channel.name, payload.message.ts)
       ctx.waitUntil(answerPromise)
@@ -70,7 +68,6 @@ export class SlackInteractivityEndpoint implements Endpoint {
     if (action.action_id == SlackActionID.PROMPT) {
       await this.slackClient.updateView(payload.view.id, SlackView.prompt({ isLoading: true }))
       const prompt = payload.view.state.values.prompt.prompt.value
-      console.log('blockaction prompt', prompt)
       let answerPromise = this.showAnswerInPromptView(payload.view.id, prompt)
       ctx.waitUntil(answerPromise)
       return new Response()

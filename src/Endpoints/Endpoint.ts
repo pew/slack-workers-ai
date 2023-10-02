@@ -1,3 +1,3 @@
 export interface Endpoint {
-  fetch(request: Request, ctx: ExecutionContext): Promise<Response>
+  fetch(request: Request, Env: any, ctx: ExecutionContext): Promise<Response>
 }

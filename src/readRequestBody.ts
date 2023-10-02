@@ -1,8 +1,8 @@
 export async function readRequestBody(request: Request): Promise<any> {
-  const contentType = request.headers.get("content-type")
-  if (contentType?.includes("application/json")) {
+  const contentType = request.headers.get('content-type')
+  if (contentType?.includes('application/json')) {
     return await request.json()
-  } else if (contentType?.includes("form")) {
+  } else if (contentType?.includes('form')) {
     const formData = await request.formData()
     const body: any = {}
     for (const entry of formData.entries()) {
@@ -10,6 +10,6 @@ export async function readRequestBody(request: Request): Promise<any> {
     }
     return body
   } else {
-    throw new Error("Unexpected content type. Expected application/json or form data.")
+    throw new Error('Unexpected content type. Expected application/json or form data.')
   }
 }

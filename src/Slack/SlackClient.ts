@@ -35,8 +35,8 @@ export class SlackClient {
         Authorization: `Bearer ${this.token}`,
       },
     })
-
-    const { messages } = await response.json() as ApiResponse
+    const resp = await response.json()
+    const { messages } = (resp) as ApiResponse
 
     return messages.map(
       ({ bot_id, text }: MessageItem): OutputMessage => ({

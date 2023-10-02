@@ -1,40 +1,32 @@
-import { NetworkService } from "./NetworkService/NetworkService"
+import { Ai } from '@cloudflare/ai'
+import { NetworkService } from './NetworkService/NetworkService'
+
+export interface Env {
+  AI: any
+}
 
 export class ChatGPTClient {
   networkService: NetworkService
-  apiKey: string
 
-  constructor(networkService: NetworkService, apiKey: string) {
+  constructor(networkService: NetworkService) {
     this.networkService = networkService
-    this.apiKey = apiKey
   }
 
-  async getResponse(prompt: {role: string, content: string}[]): Promise<string> {
+  async getResponse(prompt: { role: string; content: string }[], env: Env): Promise<string> {
+    const ai = new Ai(env.AI)
     const body = {
-      model: "gpt-3.5-turbo",
       messages: [
-        {"role": "system", "content": "You are ChatGPT, a large language model trained by OpenAI. Answer as concisely as possible."}
-      ]
+        {
+          role: 'system',
+          content:
+            'You are a helpful and friendly assistant. You answer clearly and concisely to the given input, no matter the question and context. If you do not know the answer, you will state that insead of making things up.',
+        },
+      ],
     }
 
-    Array.from(prompt).forEach(message => body.messages.push({"role": message.role, "content": message.content}))
-    const url = "https://api.openai.com/v1/chat/completions"
-    const headers = {
-      "Authorization": "Bearer " + this.apiKey
-    }
-    try {
-      const response = await this.networkService.post(url, body, headers)
-      const json = await response.json()
-      if ("error" in json) {
-        throw new Error(json.error.message)
-      } else if ("choices" in json && json.choices.length > 0) {
-        return json.choices[0].message.content
-      } else {
-        throw new Error("Did not receive any message choices")
-      }
-    } catch (error) {
-      console.log(error)
-      throw error
-    }
+    Array.from(prompt).forEach((message) => body.messages.push({ role: message.role, content: message.content }))
+    const messages = body.messages
+    const response = await ai.run('@cf/meta/llama-2-7b-chat-int8', { messages })
+    return response.response
   }
 }

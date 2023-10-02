@@ -1,8 +1,8 @@
-import { CompositionRoot } from "./CompositionRoot"
-import { Endpoint } from "./Endpoints/Endpoint"
-import { Env } from "./Env"
-import { ResponseFactory } from "./ResponseFactory"
-import { verifySlackSignature } from "./verifySlackSignature"
+import { CompositionRoot } from './CompositionRoot'
+import { Endpoint } from './Endpoints/Endpoint'
+import { Env } from './Env'
+import { ResponseFactory } from './ResponseFactory'
+import { verifySlackSignature } from './verifySlackSignature'
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -12,23 +12,26 @@ export default {
       const clonedRequest = await request.clone()
       const isSlackSignatureVerified = await verifySlackSignature(clonedRequest, env.SLACK_SIGNING_SECRET)
       if (isSlackSignatureVerified) {
-        return await endpoint.fetch(request, ctx)
+        return await endpoint.fetch(request, env, ctx)
       } else {
-        return ResponseFactory.unauthorized("The Slack signature is invalid")
+        return ResponseFactory.unauthorized('The Slack signature is invalid')
       }
     } else {
-      return ResponseFactory.badRequest("Unknown path: " + url.pathname)
+      return ResponseFactory.badRequest('Unknown path: ' + url.pathname)
     }
-  }
+  },
 }
 
 function getEndpoint(pathname: string, env: Env): Endpoint | null {
-  const pathComponents = pathname.slice(1).split("/").filter(e => e.length > 0)
-  if (pathComponents.length == 1 && pathComponents[0] == "events") {
+  const pathComponents = pathname
+    .slice(1)
+    .split('/')
+    .filter((e) => e.length > 0)
+  if (pathComponents.length == 1 && pathComponents[0] == 'events') {
     return CompositionRoot.getSlackEventsEndpoint(env.OPENAI_API_KEY, env.SLACK_TOKEN)
-  } else if (pathComponents.length == 1 && pathComponents[0] == "commands") {
+  } else if (pathComponents.length == 1 && pathComponents[0] == 'commands') {
     return CompositionRoot.getSlackCommandsEndpoint(env.OPENAI_API_KEY, env.SLACK_TOKEN)
-  } else if (pathComponents.length == 1 && pathComponents[0] == "interactivity") {
+  } else if (pathComponents.length == 1 && pathComponents[0] == 'interactivity') {
     return CompositionRoot.getSlackInteractivityEndpoint(env.OPENAI_API_KEY, env.SLACK_TOKEN)
   } else {
     return null

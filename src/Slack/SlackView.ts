@@ -1,5 +1,5 @@
-import { SlackActionID } from "./SlackActionID"
-import { SlackLoadingMessage } from "./SlackLoadingMessage"
+import { SlackActionID } from './SlackActionID'
+import { SlackLoadingMessage } from './SlackLoadingMessage'
 
 interface SlackPromptViewOptions {
   isLoading?: boolean
@@ -8,82 +8,87 @@ interface SlackPromptViewOptions {
 
 export class SlackView {
   static prompt(options?: SlackPromptViewOptions) {
-    let blocks: any[] = [{
-      type: "input",
-      block_id: "prompt",
-      label: {
-        type: "plain_text",
-        text: "Question"
-      },
-      element: {
-        type: "plain_text_input",
-        action_id: SlackActionID.PROMPT,
-        placeholder: {
-          type: "plain_text",
-          text: "Write an announcement for the next iPhone"
+    let blocks: any[] = [
+      {
+        type: 'input',
+        block_id: 'prompt',
+        label: {
+          type: 'plain_text',
+          text: 'Question',
         },
-        multiline: false,
-        dispatch_action_config: {
-          trigger_actions_on: ["on_enter_pressed"]
-        }
+        element: {
+          type: 'plain_text_input',
+          action_id: SlackActionID.PROMPT,
+          placeholder: {
+            type: 'plain_text',
+            text: 'Write an announcement for the next iPhone',
+          },
+          multiline: false,
+          dispatch_action_config: {
+            trigger_actions_on: ['on_enter_pressed'],
+          },
+        },
+        dispatch_action: true,
+        optional: false,
       },
-      dispatch_action: true,
-      optional: false
-    }]
+    ]
     if (options?.isLoading || options?.answer != null) {
       blocks.push({
-        type: "section",
-        block_id: "answer_title",
+        type: 'section',
+        block_id: 'answer_title',
         text: {
-          type: "mrkdwn",
-          text: "*Message 🧠*"
-        }
+          type: 'mrkdwn',
+          text: '*Message 🧠*',
+        },
       })
     }
     if (options?.isLoading) {
       blocks.push({
-        type: "section",
-        block_id: "loading",
+        type: 'section',
+        block_id: 'loading',
         text: {
-          type: "plain_text",
-          text: SlackLoadingMessage.getRandom()
-        }
+          type: 'plain_text',
+          text: SlackLoadingMessage.getRandom(),
+        },
       })
     }
     if (options?.answer != null) {
-      blocks = blocks.concat([{
-        type: "section",
-        block_id: "answer",
-        text: {
-          type: "plain_text",
-          text: options.answer
-        }
-      }, {
-        type: "input",
-        block_id: "conversations",
-        label: {
-          type: "plain_text",
-          text: "Conversation"
+      blocks = blocks.concat([
+        {
+          type: 'section',
+          block_id: 'answer',
+          text: {
+            type: 'plain_text',
+            text: options.answer,
+          },
         },
-        element: {
-          type: "conversations_select",
-          action_id: SlackActionID.CONVERSATION,
-          default_to_current_conversation: true,
-          response_url_enabled: true
-        }
-      }])
+        {
+          type: 'input',
+          block_id: 'conversations',
+          label: {
+            type: 'plain_text',
+            text: 'Conversation',
+          },
+          element: {
+            type: 'conversations_select',
+            action_id: SlackActionID.CONVERSATION,
+            default_to_current_conversation: true,
+            response_url_enabled: true,
+          },
+        },
+      ])
     }
     let view: any = {
-      type: "modal",
+      type: 'modal',
       title: {
-        type: "plain_text",
-        text: "Ask ChatGPT"
+        type: 'plain_text',
+        text: 'Ask ChatGPT',
       },
       blocks: blocks,
       submit: {
-        type: "plain_text",
-        text: "Send"
-      }
+        type: 'plain_text',
+        text: 'Send',
+      },
     }
     if (options?.answer != null && options.answer.length > 0) {
       view.private_metadata = options.answer

@@ -1,9 +1,9 @@
-import { ChatGPTClient } from "../ChatGPTClient"
-import { Endpoint } from "./Endpoint"
-import { readRequestBody } from "../readRequestBody"
-import { ResponseFactory } from "../ResponseFactory"
-import { SlackClient } from "../Slack/SlackClient"
-import { SlackLoadingMessage } from "../Slack/SlackLoadingMessage"
+import { ChatGPTClient } from '../ChatGPTClient'
+import { Endpoint } from './Endpoint'
+import { readRequestBody } from '../readRequestBody'
+import { ResponseFactory } from '../ResponseFactory'
+import { SlackClient } from '../Slack/SlackClient'
+import { SlackLoadingMessage } from '../Slack/SlackLoadingMessage'
 
 export class SlackCommandsEndpoint implements Endpoint {
   chatGPTClient: ChatGPTClient
@@ -14,41 +14,46 @@ export class SlackCommandsEndpoint implements Endpoint {
     this.slackClient = slackClient
   }
 
-  async fetch(request: Request, ctx: ExecutionContext): Promise<Response> {
-    if (request.method == "POST") {
-      return await this.handlePostRequest(request, ctx)
+  async fetch(request: Request, env: any, ctx: ExecutionContext): Promise<Response> {
+    if (request.method == 'POST') {
+      return await this.handlePostRequest(request, env, ctx)
     } else {
-      return ResponseFactory.badRequest("Unsupported HTTP method: " + request.method)
+      return ResponseFactory.badRequest('Unsupported HTTP method: ' + request.method)
     }
   }
 
-  private async handlePostRequest(request: Request, ctx: ExecutionContext): Promise<Response> {
+  private async handlePostRequest(request: Request, env: any, ctx: ExecutionContext): Promise<Response> {
     const body = await readRequestBody(request)
-    let answerPromise = this.postAnswer(body.response_url, body.user_id, body.text)
+    let answerPromise = this.postAnswer(body.response_url, body.user_id, body.text, env)
     ctx.waitUntil(answerPromise)
     return ResponseFactory.json({
-      text: SlackLoadingMessage.getRandom()
+      text: SlackLoadingMessage.getRandom(),
     })
   }
 
-  private async postAnswer(responseURL: string, userId: string, prompt: []) {
-    const answer = await this.chatGPTClient.getResponse(prompt)
+  private async postAnswer(responseURL: string, userId: string, prompt: [], env: any) {
+    const answer = await this.chatGPTClient.getResponse(prompt, env)
     await this.slackClient.postResponse(responseURL, {
       text: answer,
-      response_type: "in_channel",
-      blocks: [{
-        type: "section",
-        text: {
-          type: "plain_text",
-          text: answer
-        }
-      }, {
-        type: "context",
-        elements: [{
-          type: "mrkdwn",
-          text: "by <@" + userId + ">"
-        }]
-      }]
+      response_type: 'in_channel',
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'plain_text',
+            text: answer,
+          },
+        },
+        {
+          type: 'context',
+          elements: [
+            {
+              type: 'mrkdwn',
+              text: 'by <@' + userId + '>',
+            },
+          ],
+        },
+      ],
     })
   }
 }

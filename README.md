@@ -1,40 +1,8 @@
-# Cloudflare Workers AI Slack llama Bot
+# Cloudflare Workers AI Slack llama2 Bot
 
-This is really just a quick and dirty fork of the [existing ChatGPT Slack Bot](https://github.com/pew/slack-chatgpt) running on Cloudflare Workers but using the [Workers AI LLama 2 Model](https://ai.cloudflare.com/).
+This is really just a super quick 'n dirty fork of the [existing ChatGPT Slack Bot](https://github.com/pew/slack-chatgpt) running on Cloudflare Workers, but using the [Workers AI LLama 2 Model](https://ai.cloudflare.com/).
 
-## ✨ Features
-
-slack-chatgpt can be used to interact with ChatGPT in several ways on Slack.
-
-#### Mentions
-
-When mentioning the bot, it will post a reply in a thread so it does not clutter the conversation.
-
-<a href="./screenshots/mention.png" target="_blank"><img src="./screenshots/mention.png" width="300" /></a>
-
-#### Direct Messages
-
-People in the workspace can write messages messages to the bot in which case it replies directly within the conversation.
-
-<a href="./screenshots/dm.png" target="_blank"><img src="./screenshots/dm.png" width="300" /></a>
-
-#### Slash Command
-
-Use the slash command to ask ChatGPT a question and have it reply within the conversation.
-
-<a href="./screenshots/command.png" target="_blank"><img src="./screenshots/command.png" width="300" /></a>
-
-#### Shortcut on Message
-
-The shortcut on messages can be used to answer a message using ChatGPT.
-
-<a href="./screenshots/shortcut-on-message.png" target="_blank"><img src="./screenshots/shortcut-on-message.png" width="300" /></a>
-
-#### Global Shortcut
-
-The global shortcut can be used to have ChatGPT help you write a message and then send that message to a channel or you can copy the message and send it yourself.
-
-<a href="./screenshots/global-shortcut.png" target="_blank"><img src="./screenshots/global-shortcut.png" width="300" /></a>
+- [Repo for the original ChatGPT project](https://github.com/shapehq/slack-chatgpt)
 
 ## 🚀 Getting Started
 
@@ -42,24 +10,27 @@ Follow the steps below to get started.
 
 ### Create a Cloudflare Worker
 
-The Slack app was built to be hosted on Cloudflare Workers, and as such, we will need to create a worker on Cloudflare Workers.
+1. clone this repo
+2. install everything: `npm run i`
+3. deploy the Worker quickly so you can add the secrets: `npm run deploy`
+4. take note of the URL you get from the deploy script, you need it for the Slack config
+5. create your [Slack App](#create-a-slack-app), get the secrets and add them to your Worker
 
-1. Go to [workers.cloudflare.com](https://workers.cloudflare.com) and create a worker. Choose any name you would like.
-2. Take note of the URL of your worker as you will need it when creating a Slack app.
+### Add Your Secrets to the Cloudflare Worker
 
-Cloudflare's [wrangler](https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler) CLI is used to deploy, update, and monitor Cloudflare workers. We will need the CLI later so make sure to install it by running the following command.
+Your Cloudflare worker will need to know the Slack bot's token.
+
+Then add your bot's token running the following command. Paste the token when prompted to enter it.
 
 ```bash
-npm install -g wrangler
+npx wrangler secret put SLACK_TOKEN
 ```
 
-### Register on OpenAI
+Finally add the Slack signing secret. Paste the secret when prompted to enter it.
 
-You will need an OpenAI account to access the ChatGPT API.
-
-1. Register for an account on [platform.openai.com](https://platform.openai.com).
-2. Add billing information to your account if you have already used your free credits or they have expired.
-3. Generate an API key and save it for later.
+```bash
+npx wrangler secret put SLACK_SIGNING_SECRET
+```
 
 ### Create a Slack App
 
@@ -102,58 +73,36 @@ To add the global shortcut to your workspace, you must enable interactivity on y
 
 Then create a new shortcut and select "Global" when asked about where the shortcut should appear. You are free to choose the name and description that fit your needs but make sure to set the callback ID to `ask_chatgpt_global`.
 
-### Add Your Secrets to the Cloudflare Worker
+## ✨ Features
 
-Your Cloudflare worker will need to know your OpenAI API key and the Slack bot's token.
+slack-chatgpt can be used to interact with ChatGPT in several ways on Slack.
 
-Start by adding the OpenAI API key by running the following command. Paste the API key when prompted to enter it.
+#### Mentions
 
-```bash
-wrangler secret put OPENAI_API_KEY
-```
+When mentioning the bot, it will post a reply in a thread so it does not clutter the conversation.
 
-Then add your bot's token running the following command. Paste the token when prompted to enter it.
+<a href="./screenshots/mention.png" target="_blank"><img src="./screenshots/mention.png" width="300" /></a>
 
-```bash
-wrangler secret put SLACK_TOKEN
-```
+#### Direct Messages
 
-Finally add the Slack signing secret. Paste the secret when prompted to enter it.
+People in the workspace can write messages messages to the bot in which case it replies directly within the conversation.
 
-```bash
-wrangler secret put SLACK_SIGNING_SECRET
-```
+<a href="./screenshots/dm.png" target="_blank"><img src="./screenshots/dm.png" width="300" /></a>
 
-### Deploy to Cloudflare
+#### Slash Command
 
-After cloning the repository you can deploy it to Cloudflare by running the following command.
+Use the slash command to ask ChatGPT a question and have it reply within the conversation.
 
-```bash
-npx wrangler publish
-```
+<a href="./screenshots/command.png" target="_blank"><img src="./screenshots/command.png" width="300" /></a>
 
-ChatGPT should now be integrated with your Slack workspace.
+#### Shortcut on Message
 
-## 💻 Running the Project Locally
+The shortcut on messages can be used to answer a message using ChatGPT.
 
-To run the project locally, you will need to create a file named `.dev.vars` that contains your secrets. The content of the file should be as shown below.
+<a href="./screenshots/shortcut-on-message.png" target="_blank"><img src="./screenshots/shortcut-on-message.png" width="300" /></a>
 
-```
-OPENAI_API_KEY=xxx
-SLACK_TOKEN=xxx
-SLACK_SIGNING_SECRET=xxx
-```
+#### Global Shortcut
 
-Remember to replace the OpenAI API key and Slack token with your actual credentials.
+The global shortcut can be used to have ChatGPT help you write a message and then send that message to a channel or you can copy the message and send it yourself.
 
-Then start the server by running the following command.
-
-```bash
-npx wrangler dev
-```
-
-## Built with ❤️ by [Shape](https://shape.dk)
-
-We built slack-chatgpt at Shape in a couple of hours to try out the ChatGPT APIs when they were published on March 1st, 2023 and are now having a great time asking ChatGPT both serious and silly questions in our Slack 😄
-
-Want to build cool and fun products with us? [We are hiring](https://careers.shape.dk)! 😃🫶
+<a href="./screenshots/global-shortcut.png" target="_blank"><img src="./screenshots/global-shortcut.png" width="300" /></a>

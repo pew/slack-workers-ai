@@ -1,8 +1,6 @@
-<div align="center">
-<img src="./screenshots/header.jpeg" width="700" alt="Screenshot of a conversation between a person and ChatGPT" />
-<h3>Integrate <a href="https://openai.com/blog/chatgpt" target="_blank">ChatGPT</a> into Slack using a Slack app hosted on <a href="https://workers.cloudflare.com" target="_blank">Cloudflare Workers</a>.</h3>
+# Cloudflare Workers AI Slack llama Bot
 
-[✨ Features](https://github.com/shapehq/slack-chatgpt/#-features)&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;[🚀 Getting Started](https://github.com/shapehq/slack-chatgpt/#-getting-started)&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;[💻 Running the Project Locally](https://github.com/shapehq/slack-chatgpt/#-running-the-project-locally)&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;[Built with ❤️ by Shape](https://github.com/shapehq/slack-chatgpt/#built-with-%EF%B8%8F-by-shape)</div>
+This is really just a quick and dirty fork of the [existing ChatGPT Slack Bot](https://github.com/pew/slack-chatgpt) running on Cloudflare Workers but using the [Workers AI LLama 2 Model](https://ai.cloudflare.com/).
 
 ## ✨ Features
 

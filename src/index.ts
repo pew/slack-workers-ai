@@ -28,11 +28,11 @@ function getEndpoint(pathname: string, env: Env): Endpoint | null {
     .split('/')
     .filter((e) => e.length > 0)
   if (pathComponents.length == 1 && pathComponents[0] == 'events') {
-    return CompositionRoot.getSlackEventsEndpoint(env.OPENAI_API_KEY, env.SLACK_TOKEN)
+    return CompositionRoot.getSlackEventsEndpoint(env.SLACK_TOKEN)
   } else if (pathComponents.length == 1 && pathComponents[0] == 'commands') {
-    return CompositionRoot.getSlackCommandsEndpoint(env.OPENAI_API_KEY, env.SLACK_TOKEN)
+    return CompositionRoot.getSlackCommandsEndpoint(env.SLACK_TOKEN)
   } else if (pathComponents.length == 1 && pathComponents[0] == 'interactivity') {
-    return CompositionRoot.getSlackInteractivityEndpoint(env.OPENAI_API_KEY, env.SLACK_TOKEN)
+    return CompositionRoot.getSlackInteractivityEndpoint(env.SLACK_TOKEN)
   } else {
     return null
   }

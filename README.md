@@ -40,11 +40,14 @@ Start by creating a Slack app on [api.slack.com/apps](https://api.slack.com/apps
 
 Make sure to add the Bots feature to the Slack app and add the following scopes:
 
-- `app_mentions:read`
-- `chat:write`
-- `commands`
-- `im:history`
 - `chat:write.public`
+- `app_mentions:read`
+- `channels:history`
+- `chat:write`
+- `chat:write.public`
+- `commands`
+- `groups:history`
+- `im:history`
 
 Take note of your bot's OAuth token and your app's signing secret as you will need [add both to your Cloudflare worker later](https://github.com/shapehq/slack-chatgpt#add-your-secrets-to-the-cloudflare-worker).
 

@@ -7,20 +7,20 @@ import { SlackCommandsEndpoint } from './Endpoints/SlackCommandsEndpoint'
 import { SlackInteractivityEndpoint } from './Endpoints/SlackInteractivityEndpoint'
 
 export class CompositionRoot {
-  static getSlackEventsEndpoint(openAIAPIKey: string, slackToken: string): SlackEventsEndpoint {
-    return new SlackEventsEndpoint(this.getChatGPTClient(openAIAPIKey), this.getSlackClient(slackToken))
+  static getSlackEventsEndpoint(slackToken: string): SlackEventsEndpoint {
+    return new SlackEventsEndpoint(this.getChatGPTClient(), this.getSlackClient(slackToken))
   }
 
-  static getSlackCommandsEndpoint(openAIAPIKey: string, slackToken: string): SlackCommandsEndpoint {
-    return new SlackCommandsEndpoint(this.getChatGPTClient(openAIAPIKey), this.getSlackClient(slackToken))
+  static getSlackCommandsEndpoint(slackToken: string): SlackCommandsEndpoint {
+    return new SlackCommandsEndpoint(this.getChatGPTClient(), this.getSlackClient(slackToken))
   }
 
-  static getSlackInteractivityEndpoint(openAIAPIKey: string, slackToken: string): SlackInteractivityEndpoint {
-    return new SlackInteractivityEndpoint(this.getChatGPTClient(openAIAPIKey), this.getSlackClient(slackToken))
+  static getSlackInteractivityEndpoint(slackToken: string): SlackInteractivityEndpoint {
+    return new SlackInteractivityEndpoint(this.getChatGPTClient(), this.getSlackClient(slackToken))
   }
 
-  private static getChatGPTClient(apiKey: string): ChatGPTClient {
-    return new ChatGPTClient(this.getNetworkService(), apiKey)
+  private static getChatGPTClient(): ChatGPTClient {
+    return new ChatGPTClient(this.getNetworkService())
   }
 
   private static getSlackClient(token: string): SlackClient {

@@ -1,9 +1,6 @@
+import { Env } from './Env'
 import { Ai } from '@cloudflare/ai'
 import { NetworkService } from './NetworkService/NetworkService'
-
-export interface Env {
-  AI: any
-}
 
 export class ChatGPTClient {
   networkService: NetworkService

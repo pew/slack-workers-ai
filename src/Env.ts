@@ -1,5 +1,5 @@
 export interface Env {
-  OPENAI_API_KEY: string
+  AI: any
   SLACK_TOKEN: string
   SLACK_SIGNING_SECRET: string
 }
